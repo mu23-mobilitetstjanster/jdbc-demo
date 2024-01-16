@@ -22,8 +22,8 @@ public class JournalService {
     journalRepository.create(title, content);
   }
 
-  public boolean delete() {
-    return false;
+  public boolean delete(String owner, String title) {
+    return journalRepository.delete(owner, title);
   }
 
   public JournalEntry update(JournalEntry entry) {

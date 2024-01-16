@@ -42,6 +42,30 @@ public class JournalRepository {
     return entries;
   }
 
+  public List<JournalEntry> getAll(String owner) {
+    List<JournalEntry> entries = new ArrayList<>();
+    String sql = "SELECT title, content FROM journals WHERE owner=?";
+
+    try {
+      PreparedStatement pstmt = conn.prepareStatement(sql);
+      pstmt.setString(1, owner);
+      ResultSet rs = pstmt.executeQuery();
+
+      while(rs.next()) {
+        JournalEntry entry = new JournalEntry();
+
+        entry.setTitle(rs.getString("title"));
+        entry.setContent(rs.getString("content"));
+
+        entries.add(entry);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+
+    return entries;
+  }
+
   public JournalEntry get(int id) {
     return null;
   }
@@ -63,8 +87,19 @@ public class JournalRepository {
 
   }
 
-  public boolean delete() {
-    return false;
+  public boolean delete(String owner, String title) {
+    String sql = "DELETE FROM journals WHERE title=? AND owner=?";
+
+    try {
+      PreparedStatement pstmt = conn.prepareStatement(sql);
+      pstmt.setString(1, title);
+      pstmt.setString(2, owner);
+
+      pstmt.execute();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return true;
   }
 
   public JournalEntry update(JournalEntry entry) {

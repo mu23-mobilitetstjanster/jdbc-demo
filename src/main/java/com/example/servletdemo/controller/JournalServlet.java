@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-@WebServlet("/journal")
+@WebServlet("/journal/*")
 public class JournalServlet extends HttpServlet {
 
   private JournalService journalService = new JournalService();
@@ -39,6 +39,26 @@ public class JournalServlet extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    switch (req.getPathInfo()) {
+      case "/": createEntry(req, resp); break;
+      case "/delete": deleteEntry(req, resp); break;
+    }
+  }
+
+  private void deleteEntry(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    HttpSession session = req.getSession(true);
+    String username = (String) session.getAttribute("username");
+
+    String title = req.getParameter("title");
+
+    if(username == null) {
+      resp.sendRedirect("/login.jsp");
+    } else {
+      journalService.delete(username, title);
+    }
+  }
+
+  private void createEntry(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     HttpSession session = req.getSession(true);
     String username = (String) session.getAttribute("username");
 
